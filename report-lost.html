@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Lost Item | Secure Lost & Found</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="#" class="nav-link dashboard-btn">
+                    <i class="fa-solid fa-house-user"></i>
+                    Dashboard
+                </a>
+                <div class="nav-divider"></div>
+                <span class="nav-brand">Lost & Found</span>
+            </div>
+            <div class="nav-right">
+                <a href="help.html" class="nav-link">Help</a>
+                <a href="#" class="nav-link">Profile</a>
+                <a href="#" class="nav-link">Logout</a>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="card">
+            <header>
+                <h1>Report lost item</h1>
+                <p class="subtitle">Enter details about the item you've misplaced.</p>
+            </header>
+
+            <form id="lostForm">
+                <div class="form-group">
+                    <label for="itemName">Item name</label>
+                    <input type="text" id="itemName" name="itemName" placeholder="e.g., iPhone 13 Pro" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Item category</label>
+                    <select id="category" name="category" required>
+                        <option value="" disabled selected>Select a category</option>
+                        <option value="electronics">Electronics</option>
+                        <option value="documents">Documents</option>
+                        <option value="accessories">Accessories</option>
+                        <option value="others">Others</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="location">Last seen location</label>
+                    <input type="text" id="location" name="location" placeholder="e.g., Central Park Cafe" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="date">Date lost</label>
+                    <input type="date" id="date" name="date" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" placeholder="Provide any identifying features..."
+                        required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Upload item image</label>
+                    <div class="file-upload">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <span>Click to upload or drag and drop</span>
+                        <input type="file" id="image" name="image" accept="image/*">
+                    </div>
+                </div>
+
+                <button type="submit">Report lost item</button>
+            </form>
+
+            <div class="nav-links">
+                <a href="report-found.html">Found an item instead?</a>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
