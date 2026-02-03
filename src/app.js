@@ -7,6 +7,7 @@ const morgan = require('morgan');
 const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
 const featureXRoutes = require('./routes/featureX.routes');
+const claimsRoutes = require('./routes/claims');
 
 const { error } = require('./utils/response');
 
@@ -23,6 +24,7 @@ app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/featureX', featureXRoutes);
+app.use('/api', claimsRoutes);
 
 // Base route
 app.get('/', (req, res) => {
