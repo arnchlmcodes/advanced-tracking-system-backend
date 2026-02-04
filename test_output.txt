@@ -1,0 +1,57 @@
+
+> advanced-tracking-system-backend@1.0.0 test
+> jest --runInBand
+
+FAIL tests/epic7.security.test.js
+  ● Test suite failed to run
+
+    RangeError: Maximum call stack size exceeded
+
+    [0m [90m 2 |[39m
+     [90m 3 |[39m [90m// Mock specific logic[39m
+    [31m[1m>[22m[39m[90m 4 |[39m jest[33m.[39mmock([32m'firebase-admin'[39m[33m,[39m () [33m=>[39m require([32m'./__mocks__/firebase-admin'[39m))[33m;[39m
+     [90m   |[39m                                   [31m[1m^[22m[39m
+     [90m 5 |[39m
+     [90m 6 |[39m [90m// Import App after mocking[39m
+     [90m 7 |[39m [36mconst[39m app [33m=[39m require([32m'../src/app'[39m)[33m;[39m[0m
+
+      at Runtime.requireModuleOrMock (node_modules/jest-runtime/build/index.js:967:53)
+      at require (tests/epic7.security.test.js:4:35)
+      at require (tests/epic7.security.test.js:4:35)
+      at require (tests/epic7.security.test.js:4:35)
+      at require (tests/epic7.security.test.js:4:35)
+      at require (tests/epic7.security.test.js:4:35)
+      at require (tests/epic7.security.test.js:4:35)
+      at require (tests/epic7.security.test.js:4:35)
+      at require (tests/epic7.security.test.js:4:35)
+      at require (tests/epic7.security.test.js:4:35)
+      at require (tests/epic7.security.test.js:4:35)
+      at require (tests/epic7.security.test.js:4:35)
+      at require (tests/epic7.security.test.js:4:35)
+      at require (tests/epic7.security.test.js:4:35)
+      at require (tests/epic7.security.test.js:4:35)
+      at require (tests/epic7.security.test.js:4:35)
+      at require (tests/epic7.security.test.js:4:35)
+      at require (tests/epic7.security.test.js:4:35)
+      at require (tests/epic7.security.test.js:4:35)
+      at require (tests/epic7.security.test.js:4:35)
+      at require (tests/epic7.security.test.js:4:35)
+      at require (tests/epic7.security.test.js:4:35)
+      at require (tests/epic7.security.test.js:4:35)
+      at require (tests/epic7.security.test.js:4:35)
+      at require (tests/epic7.security.test.js:4:35)
+      at require (tests/epic7.security.test.js:4:35)
+      at require (tests/epic7.security.test.js:4:35)
+      at require (tests/epic7.security.test.js:4:35)
+      at require (tests/epic7.security.test.js:4:35)
+      at require (tests/epic7.security.test.js:4:35)
+      at require (tests/epic7.security.test.js:4:35)
+      at require (tests/epic7.security.test.js:4:35)
+      at require (tests/epic7.security.test.js:4:35)
+      at require (tests/epic7.security.test.js:4:35)
+
+Test Suites: 1 failed, 1 total
+Tests:       0 total
+Snapshots:   0 total
+Time:        0.733 s
+Ran all test suites.

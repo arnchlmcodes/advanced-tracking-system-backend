@@ -1,0 +1,45 @@
+
+> advanced-tracking-system-backend@1.0.0 test
+> jest --runInBand
+
+  console.log
+    Firebase Admin Initialized
+
+      at Object.log (src/config/firebase.js:13:17)
+
+[0mGET /api/security/activity [33m401[0m 3.802 ms - 55[0m
+[0mGET /api/admin/security/overview [33m401[0m 0.604 ms - 55[0m
+[0mPOST /api/admin/security/enforce [33m401[0m 15.744 ms - 55[0m
+FAIL tests/epic7.security.test.js
+  Epic 7: Security & Safety Center Backend
+    √ should load the Express app without crashing (3 ms)
+    √ should respond to GET /api/security/activity (43 ms)
+    √ should respond to GET /api/admin/security/overview (8 ms)
+    × should handle POST /api/admin/security/enforce safely (28 ms)
+    √ should export the app module
+
+  ● Epic 7: Security & Safety Center Backend › should handle POST /api/admin/security/enforce safely
+
+    expect(received).toContain(expected) // indexOf
+
+    Expected value: 401
+    Received array: [200, 201]
+
+    [0m [90m 52 |[39m
+     [90m 53 |[39m         [90m// Expect success (200) or at least safe handling[39m
+    [31m[1m>[22m[39m[90m 54 |[39m         expect([[35m200[39m[33m,[39m [35m201[39m])[33m.[39mtoContain(res[33m.[39mstatusCode)[33m;[39m
+     [90m    |[39m                            [31m[1m^[22m[39m
+     [90m 55 |[39m         expect(res[33m.[39mbody[33m.[39msuccess)[33m.[39mtoBe([36mtrue[39m)[33m;[39m [90m// Assuming standard response format[39m
+     [90m 56 |[39m     })[33m;[39m
+     [90m 57 |[39m[0m
+
+      at Object.toContain (tests/epic7.security.test.js:54:28)
+
+Test Suites: 1 failed, 1 total
+Tests:       1 failed, 4 passed, 5 total
+Snapshots:   0 total
+Time:        1.185 s, estimated 2 s
+Ran all test suites.
+Jest did not exit one second after the test run has completed.
+
+'This usually means that there are asynchronous operations that weren't stopped in your tests. Consider running Jest with `--detectOpenHandles` to troubleshoot this issue.

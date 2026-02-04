@@ -23,6 +23,9 @@ app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/featureX', featureXRoutes);
+app.use('/api/security', require('./routes/security.routes'));
+app.use('/api/admin/security', require('./routes/admin.security.routes'));
+
 
 // Base route
 app.get('/', (req, res) => {
