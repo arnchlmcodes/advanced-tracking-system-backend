@@ -1,0 +1,34 @@
+
+> advanced-tracking-system-backend@1.0.0 test
+> jest --runInBand
+
+  console.log
+    Firebase Admin Initialized
+
+      at Object.log (src/config/firebase.js:13:17)
+
+FAIL tests/epic7.security.test.js
+  ● Test suite failed to run
+
+    TypeError: admin.firestore is not a function
+
+    [0m [90m 3 |[39m [36mclass[39m [33mNotificationService[39m {
+     [90m 4 |[39m     constructor() {
+    [31m[1m>[22m[39m[90m 5 |[39m         [36mthis[39m[33m.[39mcollection [33m=[39m admin[33m.[39mfirestore()[33m.[39mcollection([32m'security_notifications'[39m)[33m;[39m
+     [90m   |[39m                                 [31m[1m^[22m[39m
+     [90m 6 |[39m     }
+     [90m 7 |[39m
+     [90m 8 |[39m     [90m/**[39m[0m
+
+      at new firestore (src/services/notification.service.js:5:33)
+      at Object.<anonymous> (src/services/notification.service.js:37:18)
+      at Object.require (src/controllers/security.controller.js:3:29)
+      at Object.require (src/routes/security.routes.js:3:28)
+      at Object.require (src/app.js:26:26)
+      at Object.require (tests/epic7.security.test.js:7:13)
+
+Test Suites: 1 failed, 1 total
+Tests:       0 total
+Snapshots:   0 total
+Time:        1.5 s
+Ran all test suites.
