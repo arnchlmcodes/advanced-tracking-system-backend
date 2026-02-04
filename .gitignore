@@ -1,6 +1,20 @@
-node_modules
+# dependencies
+node_modules/
+
+# environment variables
 .env
-.DS_Store
-coverage
+.env.*
+
+# build / coverage
 dist
-.vscode
+coverage
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS / editor
+.DS_Store
+.vscode/
+
