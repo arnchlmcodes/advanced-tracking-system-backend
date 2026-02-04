@@ -1,23 +1,27 @@
-const firebaseService = require('../services/firebase.service');
-const { error } = require('../utils/response');
+const admin = require('../config/firebase');
 
-const verifyAuth = async (req, res, next) => {
+module.exports = async (req, res, next) => {
+    // ✅ Dev-only bypass
+    if (process.env.NODE_ENV !== 'production') {
+        req.user = {
+            uid: 'test-user-123',
+            role: 'admin' // or 'user'
+        };
+        return next();
+    }
+
+    // 🔒 Production auth
     try {
         const authHeader = req.headers.authorization;
-
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return error(res, 'Unauthorized: No token provided', 401);
+        if (!authHeader?.startsWith('Bearer ')) {
+            return res.status(401).json({ message: 'Unauthorized' });
         }
 
         const token = authHeader.split(' ')[1];
-        const decodedToken = await firebaseService.verifyToken(token);
-
-        req.user = decodedToken;
+        const decoded = await admin.auth().verifyIdToken(token);
+        req.user = decoded;
         next();
     } catch (err) {
-        console.error('Auth Middleware Error:', err);
-        return error(res, 'Unauthorized: Invalid token', 401, err.message);
+        return res.status(401).json({ message: 'Unauthorized: Invalid token' });
     }
 };
-
-module.exports = verifyAuth;

@@ -34,6 +34,9 @@ class ClaimsService {
             itemId,
             claimantUid,
             status: 'pending',
+            aiConfidence: Math.floor(Math.random() * 100), // Mock AI confidence
+            adminNotes: [],
+            locked: false,
             createdAt: admin.firestore.FieldValue.serverTimestamp()
         };
 
@@ -109,6 +112,55 @@ class ClaimsService {
         // Simple update
         await claimRef.update({ status: 'rejected' });
         return { id: claimId, status: 'rejected' };
+    }
+
+    /**
+     * Add an admin note
+     * @param {string} claimId 
+     * @param {string} adminUid 
+     * @param {string} text 
+     */
+    async addAdminNote(claimId, adminUid, text) {
+        const claimRef = db.collection('claims').doc(claimId);
+        const note = {
+            adminUid,
+            text,
+            timestamp: new Date().toISOString()
+        };
+        await claimRef.update({
+            adminNotes: admin.firestore.FieldValue.arrayUnion(note)
+        });
+        return note;
+    }
+
+    /**
+     * Get claim evidence (mocked)
+     * @param {string} claimId 
+     */
+    async getClaimEvidence(claimId) {
+        // in a real app, fetch from a separate collection or storage
+        return {
+            aiAnalysis: {
+                matchScore: 85,
+                details: "High similarity with item #12345"
+            },
+            cctvClips: [
+                "https://example.com/cctv/clip1.mp4"
+            ]
+        };
+    }
+
+    /**
+     * Reopen a closed claim
+     * @param {string} claimId 
+     */
+    async reopenClaim(claimId) {
+        const claimRef = db.collection('claims').doc(claimId);
+        await claimRef.update({
+            status: 'pending',
+            locked: false
+        });
+        return { id: claimId, status: 'pending', locked: false };
     }
 }
 
