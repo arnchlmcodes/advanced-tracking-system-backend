@@ -1,4 +1,7 @@
 const claimsService = require('../services/claims.service');
+const auditService = require('../services/audit.service');
+const communicationService = require('../services/communication.service');
+const analyticsService = require('../services/analytics.service');
 const { success, error } = require('../utils/response');
 
 // Helper to check admin status
@@ -56,7 +59,12 @@ const approveClaim = async (req, res) => {
         }
 
         const { id } = req.params;
+        const { remarks } = req.body;
         const result = await claimsService.approveClaim(id);
+
+        // Log action
+        await auditService.logAction(req.user.uid, 'APPROVE', id, { remarks });
+
         return success(res, result, 'Claim approved');
     } catch (err) {
         if (err.message === 'Claim not found') {
@@ -76,10 +84,93 @@ const rejectClaim = async (req, res) => {
         }
 
         const { id } = req.params;
+        const { remarks } = req.body;
         const result = await claimsService.rejectClaim(id);
+
+        // Log action
+        await auditService.logAction(req.user.uid, 'REJECT', id, { remarks });
+
         return success(res, result, 'Claim rejected');
     } catch (err) {
         return error(res, 'Failed to reject claim', 500, err.message);
+    }
+};
+
+const addNote = async (req, res) => {
+    try {
+        if (!isAdmin(req.user)) return error(res, 'Forbidden', 403);
+        const { id } = req.params;
+        const { text } = req.body;
+        const note = await claimsService.addAdminNote(id, req.user.uid, text);
+        return success(res, note, 'Note added');
+    } catch (err) {
+        return error(res, 'Failed to add note', 500, err.message);
+    }
+};
+
+const getEvidence = async (req, res) => {
+    try {
+        if (!isAdmin(req.user)) return error(res, 'Forbidden', 403);
+        const { id } = req.params;
+        const evidence = await claimsService.getClaimEvidence(id);
+        return success(res, evidence);
+    } catch (err) {
+        return error(res, 'Failed to get evidence', 500, err.message);
+    }
+};
+
+const reopenClaim = async (req, res) => {
+    try {
+        if (!isAdmin(req.user)) return error(res, 'Forbidden', 403);
+        const { id } = req.params;
+        const result = await claimsService.reopenClaim(id);
+        await auditService.logAction(req.user.uid, 'REOPEN', id);
+        return success(res, result, 'Claim reopened');
+    } catch (err) {
+        return error(res, 'Failed to reopen claim', 500, err.message);
+    }
+};
+
+const sendMessage = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { content } = req.body;
+        // User or Admin can send
+        const msg = await communicationService.sendMessage(id, req.user.uid, content);
+        return success(res, msg, 'Message sent');
+    } catch (err) {
+        return error(res, 'Failed to send message', 500, err.message);
+    }
+};
+
+const getMessages = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const messages = await communicationService.getMessages(id);
+        return success(res, messages);
+    } catch (err) {
+        return error(res, 'Failed to get messages', 500, err.message);
+    }
+};
+
+const requestProof = async (req, res) => {
+    try {
+        if (!isAdmin(req.user)) return error(res, 'Forbidden', 403);
+        const { id } = req.params;
+        const result = await communicationService.requestProof(id, req.user.uid);
+        return success(res, result, 'Proof requested');
+    } catch (err) {
+        return error(res, 'Failed to request proof', 500, err.message);
+    }
+};
+
+const getAnalytics = async (req, res) => {
+    try {
+        if (!isAdmin(req.user)) return error(res, 'Forbidden', 403);
+        const stats = await analyticsService.getClaimStats();
+        return success(res, stats);
+    } catch (err) {
+        return error(res, 'Failed to get analytics', 500, err.message);
     }
 };
 
@@ -88,5 +179,12 @@ module.exports = {
     getMyClaims,
     getPendingClaims,
     approveClaim,
-    rejectClaim
+    rejectClaim,
+    addNote,
+    getEvidence,
+    reopenClaim,
+    sendMessage,
+    getMessages,
+    requestProof,
+    getAnalytics
 };
