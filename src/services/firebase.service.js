@@ -1,4 +1,4 @@
-const admin = require('../config/firebase');
+const { admin } = require('../config/firebase');
 
 // Example service to interact with Firestore or Auth
 class FirebaseService {
