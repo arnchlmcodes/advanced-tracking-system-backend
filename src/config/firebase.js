@@ -1,60 +1,56 @@
-const admin = require('firebase-admin');
-const dotenv = require('dotenv');
+const admin = require("firebase-admin");
+const dotenv = require("dotenv");
 const path = require('path');
 
 dotenv.config();
 
 /**
  * Validates and initializes Firebase Admin SDK
- * 
- * Strategy:
- * 1. Check for GOOGLE_APPLICATION_CREDENTIALS path in env (Best for local/docker)
- * 2. Fallback to default credentials (Best for cloud environments like GKE, Cloud Run)
+ * Supports both individual environment variables (feature/unclaimed-sale)
+ * and Service Account File / ADC (main/HEAD).
  */
-const initializeFirebase = () => {
+if (!admin.apps.length) {
+  if (process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PROJECT_ID) {
+    // Strategy 1: Explicit Env Vars
+    console.log("Initializing Firebase with Environment Variables...");
+    admin.initializeApp({
+      credential: admin.credential.cert({
+        projectId: process.env.FIREBASE_PROJECT_ID,
+        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+        privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+      }),
+    });
+  } else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+    // Strategy 2: Service Account File
+    const serviceAccountPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+    const absolutePath = path.isAbsolute(serviceAccountPath)
+      ? serviceAccountPath
+      : path.resolve(process.cwd(), serviceAccountPath);
+    console.log(`Initializing Firebase with credentials from: ${absolutePath}`);
     try {
-        if (!admin.apps.length) {
-            const serviceAccountPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
-
-            if (serviceAccountPath) {
-                // Load from file path specified in .env
-                // Ensure this path is absolute or relative to where the process runs
-                const absolutePath = path.isAbsolute(serviceAccountPath)
-                    ? serviceAccountPath
-                    : path.resolve(process.cwd(), serviceAccountPath);
-
-                console.log(`Initializing Firebase with credentials from: ${absolutePath}`);
-
-                // We require the JSON file directly. 
-                // Note: 'require' caches, but for config this is fine.
-                // Using admin.credential.cert(require(...)) is standard.
-                const serviceAccount = require(absolutePath);
-
-                admin.initializeApp({
-                    credential: admin.credential.cert(serviceAccount)
-                });
-            } else {
-                // Fallback for production environments (e.g. Google Cloud) 
-                // where credentials are auto-detected
-                console.log('Initializing Firebase with default application credentials...');
-                admin.initializeApp();
-            }
-
-            console.log('Firebase Admin Initialized Successfully');
-        }
+      // Use require for JSON loading
+      const serviceAccount = require(absolutePath);
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount)
+      });
     } catch (error) {
-        console.error('CRITICAL: Firebase Admin Initialization Failed');
-        console.error(error.message);
-        // We might want to exit here if DB is critical
-        // process.exit(1); 
+      console.error(`Failed to load service account: ${error.message}`);
+      throw error;
     }
-};
+  } else {
+    // Strategy 3: Default (ADC)
+    console.log('Initializing Firebase with default application credentials...');
+    admin.initializeApp();
+  }
+  console.log("✅ Firebase Admin Initialized");
+}
 
-initializeFirebase();
-
+// 🔁 Export commonly used services
 const db = admin.firestore();
+const auth = admin.auth();
 
-module.exports = admin;
-// Keeping default export for backward compatibility if any,
-// but preferred usage is destructuring from this file if we exported db separately.
-// However, the existing code likely uses the default export.
+module.exports = {
+  admin,
+  db,
+  auth,
+};
