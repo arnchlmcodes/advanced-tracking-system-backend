@@ -1,4 +1,4 @@
-const admin = require('../config/firebase');
+const { auth } = require('../config/firebase');
 
 // Example service to interact with Firestore or Auth
 class FirebaseService {
@@ -9,7 +9,7 @@ class FirebaseService {
      */
     async getUser(uid) {
         try {
-            const userRecord = await admin.auth().getUser(uid);
+            const userRecord = await auth.getUser(uid);
             return userRecord;
         } catch (error) {
             throw error;
@@ -23,7 +23,7 @@ class FirebaseService {
      */
     async verifyToken(token) {
         try {
-            const decodedToken = await admin.auth().verifyIdToken(token);
+            const decodedToken = await auth.verifyIdToken(token);
             return decodedToken;
         } catch (error) {
             throw error;

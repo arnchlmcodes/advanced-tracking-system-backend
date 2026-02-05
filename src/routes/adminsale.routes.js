@@ -1,11 +1,11 @@
-import express from "express";
-import { approveSale } from "../controllers/adminsale.controller.js";
-import { verifyUser } from "../middlewares/authmiddleware.js";
-import { requireAdmin } from "../middlewares/rolemiddleware.js";
+const express = require("express");
+const { approveSale } = require("../controllers/adminsale.controller");
+const authenticate = require("../middlewares/auth.middleware");
+const { authorize } = require("../middlewares/role.middleware");
 
 const router = express.Router();
 
-router.post("/approve", verifyUser, requireAdmin, approveSale);
+router.post("/approve", authenticate, authorize('admin'), approveSale);
 
-export default router;
+module.exports = router;
 

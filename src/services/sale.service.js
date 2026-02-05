@@ -1,4 +1,4 @@
-import { db } from "../../../src/config/firebase.js";
+const { db } = require('../config/firebase');
 
 /**
  * Admin approves an item for sale
@@ -7,7 +7,7 @@ import { db } from "../../../src/config/firebase.js";
  * - Item must be marked saleEligible
  * - Price must be a valid positive number
  */
-export const approveForSale = async (itemId, price) => {
+const approveForSale = async (itemId, price) => {
   const ref = db.collection("items").doc(itemId);
   const doc = await ref.get();
 
@@ -39,7 +39,7 @@ export const approveForSale = async (itemId, price) => {
  * Buyer reserves an item
  * Rule: First buyer wins
  */
-export const reserveItem = async (itemId, buyerId) => {
+const reserveItem = async (itemId, buyerId) => {
   const ref = db.collection("items").doc(itemId);
 
   await db.runTransaction(async (t) => {
@@ -69,7 +69,7 @@ export const reserveItem = async (itemId, buyerId) => {
  * Condition:
  * - Item must be reserved before completing sale
  */
-export const completeSale = async (itemId, buyerId) => {
+const completeSale = async (itemId, buyerId) => {
   const ref = db.collection("items").doc(itemId);
   const doc = await ref.get();
 
@@ -89,4 +89,10 @@ export const completeSale = async (itemId, buyerId) => {
     ownerId: buyerId,
     soldAt: Date.now(),
   });
+};
+
+module.exports = {
+  approveForSale,
+  reserveItem,
+  completeSale
 };

@@ -1,4 +1,4 @@
-const admin = require('../config/firebase');
+const { auth } = require('../config/firebase');
 
 module.exports = async (req, res, next) => {
     // ✅ Dev-only bypass
@@ -18,7 +18,7 @@ module.exports = async (req, res, next) => {
         }
 
         const token = authHeader.split(' ')[1];
-        const decoded = await admin.auth().verifyIdToken(token);
+        const decoded = await auth.verifyIdToken(token);
         req.user = decoded;
         next();
     } catch (err) {

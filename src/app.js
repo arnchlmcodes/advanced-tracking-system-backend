@@ -7,9 +7,10 @@ const morgan = require('morgan');
 const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
 const claimsRoutes = require('./routes/claims');
-const featureXRoutes = require('./routes/featureX.routes');
+
 const saleRoutes = require('./routes/sale.routes');
 const adminSaleRoutes = require('./routes/adminsale.routes');
+const itemRoutes = require('./routes/items');
 
 // Utils
 const { error } = require('./utils/response');
@@ -31,6 +32,7 @@ app.use('/api', claimsRoutes);
 // 🔹 Your sale feature
 app.use('/api/sale', saleRoutes);
 app.use('/api/admin/sale', adminSaleRoutes);
+app.use('/api/items', itemRoutes);
 
 // ===== Health Check =====
 app.get('/', (req, res) => {

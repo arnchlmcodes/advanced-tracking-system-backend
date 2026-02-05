@@ -1,10 +1,10 @@
-import { approveForSale } from "../services/sale.service.js";
+const { approveForSale } = require("../services/sale.service");
 
 /**
  * Admin approves an item for sale
  * Route: POST /api/admin/sale/approve
  */
-export const approveSale = async (req, res) => {
+const approveSale = async (req, res) => {
   try {
     const { itemId, price } = req.body;
 
@@ -38,4 +38,8 @@ export const approveSale = async (req, res) => {
       message: error.message || "Failed to approve item",
     });
   }
+};
+
+module.exports = {
+  approveSale
 };

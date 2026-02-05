@@ -1,10 +1,4 @@
-const admin = require('../config/firebase');
-const { v4: uuidv4 } = require('uuid'); // Trying to use uuid if available, otherwise fallback
-// Actually, I shouldn't rely on 'uuid' package if I can't install. 
-// Firestore auto-generates IDs, so I'll use that.
-// Storage paths might need random strings. Date.now() + math.random is sufficient.
-
-const db = admin.firestore();
+const { admin, db } = require('../config/firebase');
 const storage = admin.storage();
 
 class ItemsService {
@@ -45,14 +39,14 @@ class ItemsService {
         try {
             const itemDoc = await this.collection.doc(itemId).get();
             if (!itemDoc.exists) throw new Error('Item not found');
-            
+
             const itemData = itemDoc.data();
             if (itemData.userId !== userId) throw new Error('Unauthorized');
 
             // Parse Base64
             // Expect format: "data:image/jpeg;base64,/9j/4AAQSw..."
             const matches = imageBase64.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-            
+
             if (!matches || matches.length !== 3) {
                 throw new Error('Invalid base64 string');
             }
@@ -61,10 +55,10 @@ class ItemsService {
             const buffer = Buffer.from(matches[2], 'base64');
             const extension = type.split('/')[1];
 
-            const bucket = storage.bucket(); 
+            const bucket = storage.bucket();
             // Note: If no default bucket config, this might fail. 
             // Assuming config/firebase.js sets credential correctly and project has default bucket.
-            
+
             const fileName = `items/${itemId}_${Date.now()}.${extension}`;
             const file = bucket.file(fileName);
 
@@ -78,10 +72,10 @@ class ItemsService {
             // Option B: construction
             // Using signed URLs is safer but "public: true" suggests we want a public link.
             // Let's try to get the public URL.
-            
+
             // Standard firebase storage download URL pattern if public
             // https://storage.googleapis.com/<bucket-name>/<file-path>
-            
+
             // But getting the bucket name might be tricky if not in config.
             // asking file.bucket.name usually works.
             const publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
@@ -135,20 +129,20 @@ class ItemsService {
             if (query.type) {
                 ref = ref.where('type', '==', query.type);
             }
-            
+
             // Should probably only show 'approved' or 'pending'?
             // Assuming 'status' is existing.
             // ref = ref.where('status', '==', 'approved'); 
             // But requirements say "create ... status=pending". 
             // Usually discovery only shows open/approved items. 
             // I'll leave status filter optional or default to not showing deleted.
-            
+
             const snapshot = await ref.get();
             const result = [];
             snapshot.forEach(doc => {
                 result.push({ id: doc.id, ...doc.data() });
             });
-            
+
             return result;
         } catch (error) {
             throw error;

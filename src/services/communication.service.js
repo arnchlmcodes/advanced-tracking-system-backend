@@ -1,5 +1,4 @@
-const admin = require('../config/firebase');
-const db = admin.firestore();
+const { db, admin } = require('../config/firebase');
 
 class CommunicationService {
     /**

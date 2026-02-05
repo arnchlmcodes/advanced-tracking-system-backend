@@ -1,6 +1,4 @@
-<<<<<<< HEAD
-const admin = require('../config/firebase');
-const db = admin.firestore();
+const { db, admin } = require('../config/firebase');
 
 class AuditService {
     /**
@@ -39,23 +37,3 @@ class AuditService {
 }
 
 module.exports = new AuditService();
-=======
-import { db } from "../config/firebase.js";
-
-export const logAudit = async ({
-  action,
-  performedBy,
-  role,
-  itemId,
-  details = {}
-}) => {
-  await db.collection("audit_logs").add({
-    action,
-    performedBy,
-    role,
-    itemId,
-    details,
-    timestamp: Date.now(),
-  });
-};
->>>>>>> origin/feature/unclaimed-sale

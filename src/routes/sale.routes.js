@@ -1,9 +1,9 @@
-import express from "express";
-import { buyItem } from "../controllers/buyersale.controller.js";
-import { verifyUser } from "../middlewares/authmiddleware.js";
+const express = require("express");
+const { buyItem } = require("../controllers/buyersale.controller");
+const authenticate = require("../middlewares/auth.middleware");
 
 const router = express.Router();
 
-router.post("/buy", verifyUser, buyItem);
+router.post("/buy", authenticate, buyItem);
 
-export default router;
+module.exports = router;

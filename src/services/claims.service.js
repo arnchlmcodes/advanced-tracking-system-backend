@@ -1,5 +1,4 @@
-const admin = require('../config/firebase');
-const db = admin.firestore();
+const { db, admin } = require('../config/firebase');
 
 class ClaimsService {
     /**
@@ -52,7 +51,7 @@ class ClaimsService {
     async getMyClaims(uid) {
         const snapshot = await db.collection('claims')
             .where('claimantUid', '==', uid)
-            .orderBy('createdAt', 'desc') // Good practice to order
+            .orderBy('createdAt', 'desc')
             .get();
 
         return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));

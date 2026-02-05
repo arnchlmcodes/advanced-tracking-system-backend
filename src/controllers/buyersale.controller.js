@@ -1,6 +1,6 @@
-import { reserveItem, completeSale } from "../services/sale.service.js";
+const { reserveItem, completeSale } = require("../services/sale.service");
 
-export const buyItem = async (req, res) => {
+const buyItem = async (req, res) => {
   try {
     const { itemId } = req.body;
     const buyerId = req.user.uid;
@@ -14,4 +14,8 @@ export const buyItem = async (req, res) => {
       error: err.message,
     });
   }
+};
+
+module.exports = {
+  buyItem
 };
