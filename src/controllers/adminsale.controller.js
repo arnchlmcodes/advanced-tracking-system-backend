@@ -4,6 +4,7 @@ import { approveForSale } from "../services/sale.service.js";
  * Admin approves an item for sale
  * Route: POST /api/admin/sale/approve
  */
+//this is the function for apprve sale
 export const approveSale = async (req, res) => {
   try {
     const { itemId, price } = req.body;

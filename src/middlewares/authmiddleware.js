@@ -1,25 +1,18 @@
-import { auth } from "../../../src/config/firebase.js";
+const admin = require("../config/firebase");
 
-export const verifyUser = async (req, res, next) => {
-  const header = req.headers.authorization;
-
-  if (!header || !header.startsWith("Bearer ")) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-
-  const token = header.split(" ")[1];
-
+const verifyUser = async (req, res, next) => {
   try {
-    const decoded = await auth.verifyIdToken(token);
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) {
+      return res.status(401).json({ message: "No token provided" });
+    }
 
-    // ✅ FIRST set req.user
+    const decoded = await admin.auth().verifyIdToken(token);
     req.user = decoded;
-
-    
-
     next();
   } catch (err) {
-    console.error("Auth error:", err.message);
-    res.status(401).json({ message: "Invalid token" });
+    return res.status(401).json({ message: "Invalid token" });
   }
 };
+
+module.exports = { verifyUser };

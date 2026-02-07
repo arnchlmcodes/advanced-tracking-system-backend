@@ -12,7 +12,7 @@ const login = async (req, res) => {
         return error(res, 'Login failed', 500, err);
     }
 };
-
+// Registration controller
 const register = async (req, res) => {
     try {
         // Registration logic
