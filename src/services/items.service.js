@@ -23,7 +23,14 @@ class ItemsService {
             };
 
             const docRef = await this.collection.add(newItem);
-            return { id: docRef.id, ...newItem };
+
+            // Return serializable object
+            return {
+                id: docRef.id,
+                ...newItem,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
         } catch (error) {
             throw error;
         }

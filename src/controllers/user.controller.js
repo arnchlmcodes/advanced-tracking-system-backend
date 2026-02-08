@@ -7,23 +7,53 @@ const getProfile = async (req, res) => {
         const uid = req.user.uid;
 
         // Mock response for dev/testing environment
+        if (uid === 'admin-uid') {
+            return success(res, {
+                uid: 'admin-uid',
+                email: 'admin@gmail.com',
+                displayName: 'System Admin',
+                role: 'admin'
+            });
+        }
+
         if (uid === 'test-user-123') {
             return success(res, {
                 uid: 'test-user-123',
                 email: 'test@example.com',
                 displayName: 'Test User',
-                role: 'admin'
+                role: 'user'
             });
         }
 
-        const userRecord = await firebaseService.getUser(uid);
+        let userData;
+        try {
+            const userRecord = await firebaseService.getUser(uid);
+            userData = userRecord.toJSON ? userRecord.toJSON() : { ...userRecord };
+        } catch (apiError) {
+            console.warn(`Firebase API restricted [UID: ${uid}]. Using token fallback. Error: ${apiError.message}`);
 
-        return success(res, userRecord);
-    } catch (err) {
-        if (err.code === 'auth/user-not-found') {
-            return error(res, 'User not found', 404);
+            // FALLBACK: Construct profile from token data (req.user)
+            // This allows the app to work even if the service account lacks "Firebase Auth Admin" permissions
+            userData = {
+                uid: req.user.uid,
+                email: req.user.email || 'user@example.com',
+                displayName: req.user.name || req.user.email?.split('@')[0] || 'User',
+                photoURL: req.user.picture || null,
+                role: req.user.role || 'user'
+            };
         }
-        return error(res, 'Failed to fetch profile', 500, err.message);
+
+        // Hardcode admin role for specific account
+        if (userData.email === 'admin@gmail.com') {
+            userData.role = 'admin';
+        } else {
+            userData.role = userData.role || 'user';
+        }
+
+        return success(res, userData);
+    } catch (err) {
+        console.error(`Get Profile Fatal Error [UID: ${req.user?.uid}]:`, err.message);
+        return error(res, 'Failed to resolve user profile', 500, err.message);
     }
 };
 

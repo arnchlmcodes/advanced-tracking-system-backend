@@ -10,10 +10,16 @@ dotenv.config();
  * and Service Account File / ADC (main/HEAD).
  */
 if (!admin.apps.length) {
+  const commonConfig = {
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET || `${process.env.FIREBASE_PROJECT_ID}.appspot.com`
+  };
+
   if (process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PROJECT_ID) {
     // Strategy 1: Explicit Env Vars
     console.log("Initializing Firebase with Environment Variables...");
     admin.initializeApp({
+      ...commonConfig,
       credential: admin.credential.cert({
         projectId: process.env.FIREBASE_PROJECT_ID,
         clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
@@ -28,9 +34,9 @@ if (!admin.apps.length) {
       : path.resolve(process.cwd(), serviceAccountPath);
     console.log(`Initializing Firebase with credentials from: ${absolutePath}`);
     try {
-      // Use require for JSON loading
       const serviceAccount = require(absolutePath);
       admin.initializeApp({
+        ...commonConfig,
         credential: admin.credential.cert(serviceAccount)
       });
     } catch (error) {
@@ -40,7 +46,7 @@ if (!admin.apps.length) {
   } else {
     // Strategy 3: Default (ADC)
     console.log('Initializing Firebase with default application credentials...');
-    admin.initializeApp();
+    admin.initializeApp(commonConfig);
   }
   console.log("✅ Firebase Admin Initialized");
 }

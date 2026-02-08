@@ -9,6 +9,8 @@ class CommunicationService {
      * @param {boolean} isProofRequest 
      */
     async sendMessage(claimId, senderUid, content, isProofRequest = false) {
+        if (!content || !content.trim()) throw new Error('Message content cannot be empty');
+
         // Verify claim exists
         const claimDoc = await db.collection('claims').doc(claimId).get();
         if (!claimDoc.exists) throw new Error('Claim not found');
@@ -16,13 +18,19 @@ class CommunicationService {
         const message = {
             claimId,
             senderUid,
-            content,
+            content: content.trim(),
             isProofRequest,
             timestamp: admin.firestore.FieldValue.serverTimestamp()
         };
 
-        await db.collection('messages').add(message);
-        return message;
+        const docRef = await db.collection('messages').add(message);
+
+        return {
+            id: docRef.id,
+            ...message,
+            senderId: senderUid, // Add senderId for frontend interface compatibility
+            timestamp: new Date().toISOString()
+        };
     }
 
     /**
@@ -30,12 +38,30 @@ class CommunicationService {
      * @param {string} claimId 
      */
     async getMessages(claimId) {
-        const snapshot = await db.collection('messages')
-            .where('claimId', '==', claimId)
-            .orderBy('timestamp', 'asc')
-            .get();
+        try {
+            const snapshot = await db.collection('messages')
+                .where('claimId', '==', claimId)
+                .get();
 
-        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            const messages = snapshot.docs.map(doc => {
+                const data = doc.data();
+                return {
+                    id: doc.id,
+                    ...data,
+                    // Ensure serializable data if needed, though getMessages is usually read-only
+                };
+            });
+
+            // Manual sort to avoid index requirement for where + orderBy
+            return messages.sort((a, b) => {
+                const timeA = a.timestamp?.toMillis ? a.timestamp.toMillis() : new Date(a.timestamp).getTime();
+                const timeB = b.timestamp?.toMillis ? b.timestamp.toMillis() : new Date(b.timestamp).getTime();
+                return timeA - timeB;
+            });
+        } catch (error) {
+            console.error('getMessages error:', error);
+            throw error;
+        }
     }
 
     /**
